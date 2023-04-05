@@ -4,7 +4,7 @@ import { MongoClient, Collection } from 'mongodb';
 const app = express();
 const port = 3000;
 
-const DB_URI = 'mongodb+srv://admin:<senha>@clusterzero.ygwtxel.mongodb.net/menu';
+const DB_URI = 'mongodb+srv://admin:mdsadminkkk@clusterzero.ygwtxel.mongodb.net/menu';
 
 const client = new MongoClient(DB_URI);
 
@@ -55,6 +55,21 @@ app.get('/products', async (req: Request, res: Response) => {
     res.status(500).send('Error retrieving products');
   }
 });
+
+app.get('/products/:id', async (req: Request, res: Response) => {
+  try{
+    const productId = req.params.id
+    const product = await products.findOne({id: productId})
+    if(!product){
+      res.status(404).send('Product not found')
+      return
+    }
+    res.send(product)
+  }catch(err){
+    console.error(err);
+    res.status(500).send('Error retrieving product')
+  }
+})
 
 app.get('/categories', async (req: Request, res: Response) => {
   try{
