@@ -1,43 +1,8 @@
 import express, { Request, Response } from 'express';
-import { MongoClient, Collection } from 'mongodb';
+import { products, categories, connect } from './db';
 
 const app = express();
 const port = 3000;
-
-const DB_URI = 'mongodb+srv://admin:@clusterzero.ygwtxel.mongodb.net/menu';
-
-const client = new MongoClient(DB_URI);
-
-interface Category{
-  id: string;
-  parent: Category | null;
-  name: string;
-}
-
-interface Product {
-  id: string;
-  categories: string[];
-  name: string;
-  qty: number;
-  price: number;
-}
-
-let categories: Collection<Category>;
-let products: Collection<Product>;
-
-async function connect() {
-  try {
-    await client.connect();
-    console.log('Connected to MongoDB');
-    
-    const db = client.db('menu');
-    categories = db.collection<Category>('categories');
-    products = db.collection<Product>('products');
-  } catch (err) {
-    console.error(err);
-  }
-}
-
 
 connect();
 
