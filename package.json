@@ -26,6 +26,9 @@
     "typescript": "^5.0.3"
   },
   "dependencies": {
+    "bcrypt": "^5.1.0",
+    "express-session": "^1.17.3",
+    "jsonwebtoken": "^9.0.0",
     "mongodb": "^5.2.0"
   }
 }

@@ -4,11 +4,9 @@ import { MongoClient, Collection } from 'mongodb';
 const app = express();
 const port = 3000;
 
-const DB_URI = 'mongodb+srv://admin:mdsadminkkk@clusterzero.ygwtxel.mongodb.net/menu';
+const DB_URI = 'mongodb+srv://admin:@clusterzero.ygwtxel.mongodb.net/menu';
 
 const client = new MongoClient(DB_URI);
-
-// interfaces -> mover pra outro arquivo dps
 
 interface Category{
   id: string;
@@ -40,10 +38,16 @@ async function connect() {
   }
 }
 
+
 connect();
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.get('/', (req: Request, res: Response) => {
+  try {
+    res.send(`Hello`);
+  } catch (err) {
+    console.error(err);
+    res.status(401).send('Invalid token');
+  }
 });
 
 app.get('/products', async (req: Request, res: Response) => {
@@ -89,7 +93,8 @@ app.get('/categories/:id', async (req: Request, res: Response) => {
       res.status(404).send('Category not found')
       return
     }
-    res.send(category)
+    const productList = await products.find({categories: categoryId}).toArray();
+    res.send({category, products: productList});
   }catch(err){
     console.error(err);
     res.status(500).send('Error retrieving category')
