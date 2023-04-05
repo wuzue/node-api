@@ -66,6 +66,21 @@ app.get('/categories', async (req: Request, res: Response) => {
   }
 });
 
+app.get('/categories/:id', async (req: Request, res: Response) => {
+  try{
+    const categoryId = req.params.id
+    const category = await categories.findOne({id: categoryId})
+    if(!category){
+      res.status(404).send('Category not found')
+      return
+    }
+    res.send(category)
+  }catch(err){
+    console.error(err);
+    res.status(500).send('Error retrieving category')
+  }
+})
+
 app.listen(port, () => {
   console.log(`Server listening on port ${port}.`);
 });
