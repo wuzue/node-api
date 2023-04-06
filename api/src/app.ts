@@ -5,6 +5,8 @@ const auth = require('./auth')
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+import { Product, Category } from './db'
+const { ObjectId } = require('mongodb');
 
 
 const app = express()
@@ -58,7 +60,7 @@ app.post('/login', (request, response) => {
   }
 });
 
-app.get('/products', (req: Request, res: Response) => {
+app.get('/product', (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
     return res.status(401).send({ message: 'No token provided' });
@@ -80,13 +82,62 @@ app.get('/products', (req: Request, res: Response) => {
   });
 });
 
-//free endpoint
-app.get('/free-endpoint', (request, response) => {
-  response.json({ message: "You are allowed to access mt at anytime"})
+app.get('/product/:id', async (req: Request, res: Response) => {
+  try{
+    const productId = req.params.id
+    const product = await products.findOne({id: productId})
+    if(!product){
+      res.status(404).send('Product not found')
+      return
+    }
+    res.send(product)
+  }catch(err){
+    console.error(err);
+    res.status(500).send('Error retrieving product')
+  }
 })
-//authentication endpoint
-app.get('/auth-endpoint', auth, (request, response) => {
-  response.json({ message: "You are authorized to access me now!"})
+app.get('/category', async (req: Request, res: Response) => {
+  try{
+    const categoryList = await categories.find().toArray();
+    res.send(categoryList);
+  } catch(err){
+    console.error(err);
+    res.status(500).send('Error retrieving categories');
+  }
+});
+app.get('/category/:id', async (req: Request, res: Response) => {
+  try{
+    const categoryId = req.params.id
+    const category = await categories.findOne({id: categoryId})
+    if(!category){
+      res.status(404).send('Category not found')
+      return
+    }
+    const productList = await products.find({categories: categoryId}).toArray();
+    res.send({category, products: productList});
+  }catch(err){
+    console.error(err);
+    res.status(500).send('Error retrieving category')
+  }
+})
+
+app.post('/product', async (req: Request, res: Response) => {
+  try {
+    const newProduct: Product = req.body
+    // find the last product in the collection
+    const lastProduct = await products.findOne({}, { sort: { _id: -1 } })
+    // set the new product ID to be the last product's ID + 1, or 1 if there are no products
+    const newId = lastProduct ? parseInt(lastProduct.id) + 1 : 1
+    newProduct.id = newId.toString()
+    // insert the new product into the collection
+    const result = await products.insertOne(newProduct)
+    // find the newly inserted product in the collection and return it
+    const insertedProduct = await products.findOne({ _id: result.insertedId })
+    res.send(insertedProduct)
+  } catch (err) {
+    console.error(err)
+    res.status(500).send('Error creating product')
+  }
 })
 
 module.exports = app;

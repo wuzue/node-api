@@ -2,13 +2,13 @@ const dotenv = require('dotenv')
 import { MongoClient, Collection } from "mongodb";
 dotenv.config()
 
-interface Category{
+export interface Category{
   id: string;
   parent: Category | null;
   name: string;
 }
 
-interface Product {
+export interface Product {
   id: string;
   categories: string[];
   name: string;
