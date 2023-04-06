@@ -140,4 +140,19 @@ app.post('/product', async (req: Request, res: Response) => {
   }
 })
 
+app.patch('/product/:id', async (req: Request, res: Response) => {
+  const productId = req.params.id;
+  const updatedProduct: Product = req.body;
+  try {
+    const result = await products.findOneAndUpdate({ id: productId }, { $set: updatedProduct });
+    if (!result.value) {
+      return res.status(404).send('Product not found');
+    }
+    res.send(result.value);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error updating product');
+  }
+});
+
 module.exports = app;
