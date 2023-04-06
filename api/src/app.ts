@@ -155,4 +155,20 @@ app.patch('/product/:id', async (req: Request, res: Response) => {
   }
 });
 
+app.delete('/product/:id', async (req: Request, res: Response) => {
+  try {
+    const productId = req.params.id;
+    const result = await products.deleteOne({ id: productId });
+
+    if (result.deletedCount === 0) {
+      res.status(404).send(`Product with id ${productId} not found`);
+    } else {
+      res.send(`Product with id ${productId} deleted`);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error deleting product');
+  }
+});
+
 module.exports = app;
