@@ -65,9 +65,7 @@ app.get('/product', (req: Request, res: Response) => {
   if (!authHeader) {
     return res.status(401).send({ message: 'No token provided' });
   }
-
   const token = authHeader.split(' ')[1];
-
   jwt.verify(token, 'RANDOM-TOKEN', async (err, decoded) => {
     if (err) {
       return res.status(401).send({ message: 'Failed to authenticate token' });
@@ -83,7 +81,16 @@ app.get('/product', (req: Request, res: Response) => {
 });
 
 app.get('/product/:id', async (req: Request, res: Response) => {
-  try{
+  const authHeader = req.headers.authorization
+  if(!authHeader){
+    return res.status(401).send({message: 'no token provided'})
+  }
+  const token = authHeader.split(' ')[1]
+  jwt.verify(token, 'RANDOM-TOKEN', async (err, decoded) => {
+    if(err){
+      return res.status(401).send({message: 'failed to authenticate'})
+    }//after token in validated
+    try{
     const productId = req.params.id
     const product = await products.findOne({id: productId})
     if(!product){
@@ -95,80 +102,133 @@ app.get('/product/:id', async (req: Request, res: Response) => {
     console.error(err);
     res.status(500).send('Error retrieving product')
   }
+  })
 })
+
 app.get('/category', async (req: Request, res: Response) => {
-  try{
-    const categoryList = await categories.find().toArray();
-    res.send(categoryList);
-  } catch(err){
-    console.error(err);
-    res.status(500).send('Error retrieving categories');
+  const authHeader = req.headers.authorization
+  if(!authHeader){
+    return res.status(401).send({message:'no token provided'})
   }
-});
-app.get('/category/:id', async (req: Request, res: Response) => {
-  try{
-    const categoryId = req.params.id
-    const category = await categories.findOne({id: categoryId})
-    if(!category){
-      res.status(404).send('Category not found')
-      return
+  const token = authHeader.split(' ')[1]
+  jwt.verify(token, 'RANDOM-TOKEN', async (err, decoded) => {
+    if(err){
+      return res.status(401).send({message: 'failed to authenticate'})
+    }//after token is validated
+    try{
+      const categoryList = await categories.find().toArray();
+      res.send(categoryList);
+    } catch(err){
+      console.error(err);
+      res.status(500).send('Error retrieving categories');
     }
-    const productList = await products.find({categories: categoryId}).toArray();
-    res.send({category, products: productList});
-  }catch(err){
-    console.error(err);
-    res.status(500).send('Error retrieving category')
+  })
+});
+
+app.get('/category/:id', async (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization
+  if(!authHeader){
+    return res.status(401).send({message: 'no token provided'})
   }
+  const token = authHeader.split(' ')[1]
+  jwt.verify(token, 'RANDOM-TOKEN', async (err, decoded) => {
+    if(err){
+      return res.status(401).send({message: 'failed to authenticate'})
+    }//after token is validated
+    try{
+      const categoryId = req.params.id
+      const category = await categories.findOne({id: categoryId})
+      if(!category){
+        res.status(404).send('Category not found')
+        return
+      }
+      const productList = await products.find({categories: categoryId}).toArray();
+      res.send({category, products: productList});
+    }catch(err){
+      console.error(err);
+      res.status(500).send('Error retrieving category')
+    }
+  })
 })
 
 app.post('/product', async (req: Request, res: Response) => {
-  try {
-    const newProduct: Product = req.body
-    // find the last product in the collection
-    const lastProduct = await products.findOne({}, { sort: { _id: -1 } })
-    // set the new product ID to be the last product's ID + 1, or 1 if there are no products
-    const newId = lastProduct ? parseInt(lastProduct.id) + 1 : 1
-    newProduct.id = newId.toString()
-    // insert the new product into the collection
-    const result = await products.insertOne(newProduct)
-    // find the newly inserted product in the collection and return it
-    const insertedProduct = await products.findOne({ _id: result.insertedId })
-    res.send(insertedProduct)
-  } catch (err) {
-    console.error(err)
-    res.status(500).send('Error creating product')
+  const authHeader = req.headers.authorization
+  if(!authHeader){
+    return res.status(401).send({message: 'no token provided'})
   }
+  const token = authHeader.split(' ')[1]
+  jwt.verify(token, 'RANDOM-TOKEN', async (err, decoded) => {
+    if(err){
+      return res.status(401).send({message: 'failed to authenticate'})
+    }//after token is validated
+    try {
+      const newProduct: Product = req.body
+      // find the last product in the collection
+      const lastProduct = await products.findOne({}, { sort: { _id: -1 } })
+      // set the new product ID to be the last product's ID + 1, or 1 if there are no products
+      const newId = lastProduct ? parseInt(lastProduct.id) + 1 : 1
+      newProduct.id = newId.toString()
+      // insert the new product into the collection
+      const result = await products.insertOne(newProduct)
+      // find the newly inserted product in the collection and return it
+      const insertedProduct = await products.findOne({ _id: result.insertedId })
+      res.send(insertedProduct)
+    } catch (err) {
+      console.error(err)
+      res.status(500).send('Error creating product')
+    }
+  })
 })
 
 app.patch('/product/:id', async (req: Request, res: Response) => {
-  const productId = req.params.id;
-  const updatedProduct: Product = req.body;
-  try {
-    const result = await products.findOneAndUpdate({ id: productId }, { $set: updatedProduct });
-    if (!result.value) {
-      return res.status(404).send('Product not found');
-    }
-    res.send(result.value);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error updating product');
+  const authHeader = req.headers.authorization
+  if(!authHeader){
+    return res.status(401).send({message: 'no token provided'})
   }
+  const token = authHeader.split(' ')[1]
+  jwt.verify(token, 'RANDOM-TOKEN', async (err, decoded) => {
+    if(err){
+      return res.status(401).send({message: 'failed to authenticate'})
+    }//after token is validated
+    const productId = req.params.id;
+    const updatedProduct: Product = req.body;
+    try {
+      const result = await products.findOneAndUpdate({ id: productId }, { $set: updatedProduct });
+      if (!result.value) {
+        return res.status(404).send('Product not found');
+      }
+      res.send(result.value);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error updating product');
+    }
+  })
 });
 
 app.delete('/product/:id', async (req: Request, res: Response) => {
-  try {
-    const productId = req.params.id;
-    const result = await products.deleteOne({ id: productId });
-
-    if (result.deletedCount === 0) {
-      res.status(404).send(`Product with id ${productId} not found`);
-    } else {
-      res.send(`Product with id ${productId} deleted`);
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error deleting product');
+  const authHeader = req.headers.authorization
+  if(!authHeader){
+    return res.status(401).send({message: 'no token provided'})
   }
+  const token = authHeader.split(' ')[1]
+  jwt.verify(token, 'RANDOM-TOKEN', async (err, decoded) => {
+    if(err){
+      return res.status(401).send({message: 'failed to authenticate'})
+    }//after token is validated
+    try {
+      const productId = req.params.id;
+      const result = await products.deleteOne({ id: productId });
+  
+      if (result.deletedCount === 0) {
+        res.status(404).send(`Product with id ${productId} not found`);
+      } else {
+        res.send(`Product with id ${productId} deleted`);
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error deleting product');
+    }
+  })
 });
 
 module.exports = app;
