@@ -68,3 +68,13 @@ Connected to MongoDB
 ```
 a API já está funcionando normalmente, e você pode accessá-lá em ```http://localhost:4000```.<br>
 Agora, para ver o projeto funcionando, ou para se guiar no que você pode fazer, é só seguir o meu vídeo demonstrativo: https://www.youtube.com/watch?v=OwLHBgvY9gs
+
+<hr>
+
+#### *Observações*: Caso se depare com alguma mensagem indicando erro sintaxe ou este erro em específico ao rodar o projeto:
+```
+node_modules/mongodb_lib/operations/add_user.js:16 
+this.options = options ?? {};
+syntax error: unexpected token '?'
+```
+Provavelmente a sua versão do Node está desatualizada. Atualize para uma versão mais atual e rode o projeto novamente. Recomendo a versão 18+.
