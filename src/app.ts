@@ -4,10 +4,7 @@ import { products, categories, connect } from './db';
 const auth = require('./auth')
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const bcrypt = require('bcrypt');
 import { Product, Category } from './db'
-const { ObjectId } = require('mongodb');
-
 
 const app = express()
 
@@ -34,8 +31,9 @@ app.get("/", (request, response, next) => {
 const user_admin = 'boss'
 const pass_admin = 'boss123'
 
-app.post('/login', (request, response) => {
+app.post('/auth/login', (request, response) => {
   // check if the email and password are equal to the admin credentials
+  // to login, use user: 'boss' and password: 'boss123'
   if (request.body.user === user_admin && request.body.password === pass_admin) {
     // create jwt token
     const token = jwt.sign(
