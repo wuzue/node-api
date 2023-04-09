@@ -9,8 +9,6 @@
 * **TypeScript**<br>
 Linguagem de programação que adiciona tipagem estática ao JavaScript, oferecendo mais segurança e facilidade de manutenção em projetos grandes e complexos.
 Ao adicionar tipagem estática ao JavaScript, permite que o desenvolvedor tenha uma maior segurança ao escrever o código, pois é possível identificar erros de digitação de variáveis, funções e parâmetros antes mesmo de executar o código
-<br>
-
 * **jsonwebtoken**<br>
 Biblioteca para criação e verificação de tokens de autenticação baseados em JSON.
 Oferece uma forma segura e eficiente de gerenciar autenticação e autorização em aplicações web e APIs RESTful.
@@ -46,7 +44,7 @@ Instale as dependências do projeto:
 ```
 npm i
 ```
-crie um arquivo ```.env``` na raíz do projeto com a seguinte variável:
+Crie um arquivo ```.env``` na raíz do projeto com a seguinte variável:
 ```
 DB_URI = ""
 ```
